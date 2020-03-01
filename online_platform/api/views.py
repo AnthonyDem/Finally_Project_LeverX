@@ -5,7 +5,7 @@ from online_platform.models import Lecture, Course, Task, CompletedTask, Comment
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.authtoken.models import Token
 from .permissions import (IsOwnerOrReadOnly, IsNotYourClassroom,
-                          IsStudentOrReadOnly, IsTeacherOrReadOnly)
+                          IsStudentOrReadOnly, IsTeacherOrReadOnly, IsNotYourMark)
 from .serializers import (LectureDetailSerializer, TaskDetailSerializer,
                           CompletedTaskDetailSerializer, CommentDetailSerializer,
                           BaseUserSerializer, CourseDetailSerializer, UserRegSerializer)
@@ -148,7 +148,7 @@ class CompletedtaskDetailView(generics.RetrieveUpdateDestroyAPIView):
         return CompletedTask.objects.all
 
 
-@permission_classes([IsAuthenticated, ])
+@permission_classes([IsAuthenticated, IsNotYourMark])
 class CommentListView(generics.ListCreateAPIView):
     serializer_class = CommentDetailSerializer
 
@@ -176,3 +176,4 @@ class LectureTasksListView(generics.ListCreateAPIView):
     def get_queryset(self):
         queryset = Task.objects.filter(lectures=self.kwargs['pk'])
         return queryset
+
