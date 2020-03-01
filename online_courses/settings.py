@@ -24,6 +24,7 @@ SECRET_KEY = 'j924hb=gvy$#-$w4)@t(r*b9y(3lon%#l5_u=g5td_^77587hf'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+
 ALLOWED_HOSTS = []
 
 # Application definition

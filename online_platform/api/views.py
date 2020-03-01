@@ -2,10 +2,10 @@ from rest_framework import generics
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from online_platform.models import Lecture, Course, Task, CompletedTask, Comment, BaseUser
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.authtoken.models import Token
-from online_platform.permissions import (IsOwnerOrReadOnly, IsNotYourClassroom,
-                                         IsStudentOrReadOnly, IsTeacherOrReadOnly)
+from .permissions import (IsOwnerOrReadOnly, IsNotYourClassroom,
+                          IsStudentOrReadOnly, IsTeacherOrReadOnly)
 from .serializers import (LectureDetailSerializer, TaskDetailSerializer,
                           CompletedTaskDetailSerializer, CommentDetailSerializer,
                           BaseUserSerializer, CourseDetailSerializer, UserRegSerializer)
@@ -30,6 +30,7 @@ def registration_view(request):
         return Response(data)
 
 
+@permission_classes([IsAdminUser, ])
 class UserListView(generics.ListAPIView):
     queryset = BaseUser.objects.all()
     serializer_class = BaseUserSerializer

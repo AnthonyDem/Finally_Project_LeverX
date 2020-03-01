@@ -1,5 +1,4 @@
 from rest_framework import permissions
-from .models import Course, Lecture
 
 
 class IsOwnerOrReadOnly(permissions.BasePermission):
@@ -31,6 +30,3 @@ class IsNotYourClassroom(permissions.BasePermission):
             return request.user in obj.teachers.all()
         elif request.user.is_student:
             return request.user in obj.students.all()
-
-
-

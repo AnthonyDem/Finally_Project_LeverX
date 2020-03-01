@@ -22,6 +22,7 @@ def create_auth_token(sender, instance=None, created=False, **kwargs):
     if created:
         Token.objects.create(user=instance)
 
+
 class BaseUser(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField('email address', unique=True)
     username = models.CharField(max_length=250, blank=True)
@@ -86,7 +87,7 @@ class CompletedTask(models.Model):
     updated = models.DateField(auto_now=True)
 
     def __str__(self):
-        return 'Task: {} Student: {}'.format(self.task, self.student)
+        return 'Task: {}, Student: {}'.format(self.task, self.student)
 
 
 class Mark(models.Model):
