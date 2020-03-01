@@ -1,4 +1,4 @@
-from rest_framework import generics, status
+from rest_framework import generics
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from online_platform.models import Lecture, Course, Task, CompletedTask, Comment, BaseUser
@@ -20,6 +20,8 @@ def registration_view(request):
             data['response'] = 'successfully registered a new user'
             data['email'] = user.email
             data['username'] = user.username
+            data['is_student'] = user.is_student
+            data['is_teacher'] = user.is_teacher
         else:
             data = serializer.errors
         return Response(data)

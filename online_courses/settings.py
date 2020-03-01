@@ -68,6 +68,9 @@ ACCOUNT_UNIQUE_EMAIL = True
 # ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_USERNAME_REQUIRED = False
 
+REST_AUTH_REGISTER_SERIALIZER = {
+    'REGISTER_SERIALIZER': 'online_platform.api.serializers.UserRegSerializer',
+}
 
 
 MIDDLEWARE = [
@@ -106,11 +109,11 @@ WSGI_APPLICATION = 'online_courses.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'online_plt',
+        'NAME': 'online_db',
         'HOST': 'localhost',
         'PORT': '3306',
-        'USER': 'djg',
-        'PASSWORD': 'Mypass1234',
+        'USER': 'djan1',
+        'PASSWORD': 'Mypass123!',
     }
 }
 
@@ -151,9 +154,6 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated',
-    ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',
         'rest_framework.authentication.SessionAuthentication',

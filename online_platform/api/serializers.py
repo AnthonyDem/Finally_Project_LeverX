@@ -16,26 +16,34 @@ class BaseUserDetailSerializer(serializers.ModelSerializer):
 
 
 class UserRegSerializer(serializers.ModelSerializer):
-    is_student = serializers.BooleanField(default=False)
-    is_teacher = serializers.BooleanField(default=False)
+    is_student = serializers.BooleanField(style={'input_type': 'checkbox'}, default=False)
+    is_teacher = serializers.BooleanField(style={'input_type': 'checkbox'}, default=False)
 
     class Meta:
         model = BaseUser
         fields = ('email', 'username', 'password', 'is_student', 'is_teacher')
 
     def save(self):
-        user = BaseUser(
-            email=self.validated_data['email'],
-            username=self.validated_data['username']
-        )
+        # user = BaseUser.objects.create_user(
+        # email=self.validated_data['email'],
+        # username=self.validated_data['username'],
+        # password=self.validated_data['password']
+        # )
         student = self.validated_data['is_student']
         teacher = self.validated_data['is_teacher']
         if student:
-            user.objects.create_student()
+            user = BaseUser.objects.create_student(email=self.validated_data['email'],
+                                                   username=self.validated_data['username'],
+                                                   password=self.validated_data['password'])
+            user.save()
             return user
+
         elif teacher:
-            user.objects.create_teacher()
-            return teacher
+            user = BaseUser.objects.create_teacher(email=self.validated_data['email'],
+                                                   username=self.validated_data['username'],
+                                                   password=self.validated_data['password'])
+            user.save()
+            return user
 
 
 class CourseDetailSerializer(serializers.ModelSerializer):

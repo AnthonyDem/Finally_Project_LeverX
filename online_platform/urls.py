@@ -8,8 +8,8 @@ from .api.views import (CourseDetailView, CourseListCreateView, UserListView, Co
 app_name = 'online_platform'
 
 urlpatterns = [
-    path('/register/', registration_view, name="register"),
-    path('/users/', UserListView.as_view()),
+    path('/auth/', include('rest_framework.urls')),
+    path('/register/', registration_view, name='register'),
     path('/courses/', CourseListCreateView.as_view()),
     path('/courses/<int:pk>/', CourseDetailView.as_view()),
     path('/courses/<int:pk>/lectures', CourseLecturesListView.as_view()),
