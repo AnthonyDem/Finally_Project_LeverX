@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.conf import settings
-from .managers import UsersManager
+from .manager import UsersManager
 
 
 # Create your models here.
@@ -16,18 +16,16 @@ def content_lectures(instance, filename):
 
 class BaseUser(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField('email address', unique=True)
+    username = models.CharField(max_length=250 , blank=True)
     is_student = models.BooleanField(default=False)
     is_teacher = models.BooleanField(default=False)
+    is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
 
     objects = UsersManager()
-
-    class Meta:
-        verbose_name = ('user',)
-        verbose_name_plural = ('users',)
 
     def __str__(self):
         return self.email
@@ -37,8 +35,8 @@ class Course(models.Model):
     title = models.CharField(max_length=150)
     slug = models.SlugField(max_length=250)
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    teacher = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='teachers',
-                                     limit_choices_to={'is_teacher': True})
+    teachers = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='teachers',
+                                      limit_choices_to={'is_teacher': True})
     students = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='students', blank=True,
                                       limit_choices_to={'is_student': True})
     created = models.DateTimeField(auto_now_add=True)
@@ -57,7 +55,7 @@ class Lecture(models.Model):
 
 class Task(models.Model):
     title = models.CharField(max_length=250)
-    lecture = models.ForeignKey(Lecture, on_delete=models.CASCADE, related_name='tasks')
+    lecture = models.ForeignKey(Lecture, on_delete=models.CASCADE, related_name='lectures')
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateField(auto_now=True)
 
@@ -66,7 +64,7 @@ class Task(models.Model):
 
 
 class CompletedTask(models.Model):
-    STATUS_CHOISES = (
+    STATUS_CHOICES = (
         ('graded', 'Graded'),
         ('turned_in', 'Turned in'),
         ('no_data', 'No data yet')
@@ -75,7 +73,7 @@ class CompletedTask(models.Model):
     student = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
                                 limit_choices_to={'is_student': True})
     task = models.ForeignKey(Task, on_delete=models.CASCADE)
-    status = models.CharField(choices=STATUS_CHOISES, max_length=100, default='no_data')
+    status = models.CharField(choices=STATUS_CHOICES, max_length=100, default='no_data')
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateField(auto_now=True)
 
