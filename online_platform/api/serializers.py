@@ -1,6 +1,5 @@
 from django.contrib.auth.models import User
-from rest_auth.registration.serializers import VerifyEmailSerializer
-from rest_framework import serializers, generics
+from rest_framework import serializers
 from online_platform.models import Lecture, Task, CompletedTask, Comment, Course, Mark, BaseUser
 
 
@@ -16,13 +15,27 @@ class BaseUserDetailSerializer(serializers.ModelSerializer):
         fields = ('email', 'is_student', 'is_teacher')
 
 
-class UserRegSerializer(VerifyEmailSerializer):
+class UserRegSerializer(serializers.ModelSerializer):
     is_student = serializers.BooleanField(default=False)
     is_teacher = serializers.BooleanField(default=False)
 
     class Meta:
         model = BaseUser
-        fields = ('email', 'password', 'is_student', 'is_teacher')
+        fields = ('email', 'username', 'password', 'is_student', 'is_teacher')
+
+    def save(self):
+        user = BaseUser(
+            email=self.validated_data['email'],
+            username=self.validated_data['username']
+        )
+        student = self.validated_data['is_student']
+        teacher = self.validated_data['is_teacher']
+        if student:
+            user.objects.create_student()
+            return user
+        elif teacher:
+            user.objects.create_teacher()
+            return teacher
 
 
 class CourseDetailSerializer(serializers.ModelSerializer):
@@ -59,30 +72,3 @@ class CommentDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = ('task', 'name', 'comment', 'created', 'updated')
-
-
-'''
-class UserRegSerializer(RegisterSerializer):
-    is_student = serializers.BooleanField(default=False)
-    is_teacher = serializers.BooleanField(default=False)
-
-    class Meta:
-        model = BaseUser
-        fields = ('email', 'password', 'is_student', 'is_teacher')
-
-
-    def save(self, request):
-        """stud_role = self.validated_data['is_student']
-        teach_role = self.validated_data['is_teacher']
-        if stud_role:
-            stud = BaseUser.objects.create_student(self.validated_data['email'], self.validated_data['password'])
-            DefaultAccountAdapter.confirm_email(request, stud[''])
-            stud.save()
-            return stud
-        elif teach_role:
-            teach = BaseUser.objects.create_teacher(self.validated_data['email'], self.validated_data['password'])
-            teach.save()
-            return teach"""
-
-
-'''
