@@ -1,13 +1,14 @@
 from rest_framework import generics
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from online_platform.models import Lecture, Course, Task, CompletedTask, Comment, BaseUser
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.authtoken.models import Token
+from online_platform.permissions import (IsOwnerOrReadOnly, IsNotYourClassroom,
+                                         IsStudentOrReadOnly, IsTeacherOrReadOnly)
 from .serializers import (LectureDetailSerializer, TaskDetailSerializer,
                           CompletedTaskDetailSerializer, CommentDetailSerializer,
                           BaseUserSerializer, CourseDetailSerializer, UserRegSerializer)
-from online_platform.permissions import (IsOwnerOrReadOnly, IsNotYourClassroom,
-                                         IsStudentOrReadOnly, IsTeacherOrReadOnly)
-from rest_framework.permissions import IsAuthenticated
 
 
 @api_view(['POST', ])
@@ -22,6 +23,8 @@ def registration_view(request):
             data['username'] = user.username
             data['is_student'] = user.is_student
             data['is_teacher'] = user.is_teacher
+            token = Token.objects.get(user=user)
+            data['token'] = token
         else:
             data = serializer.errors
         return Response(data)
@@ -32,9 +35,9 @@ class UserListView(generics.ListAPIView):
     serializer_class = BaseUserSerializer
 
 
+@permission_classes([IsAuthenticated, IsOwnerOrReadOnly])
 class CourseListCreateView(generics.ListCreateAPIView):
     serializer_class = CourseDetailSerializer
-    permission_classes = (IsAuthenticated, IsOwnerOrReadOnly)
 
     def get_queryset(self):
         user = self.request.user
@@ -51,16 +54,15 @@ class CourseListCreateView(generics.ListCreateAPIView):
         serializer.save(teachers=(user,))
 
 
+@permission_classes([IsAuthenticated, IsTeacherOrReadOnly, IsNotYourClassroom])
 class CourseDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = CourseDetailSerializer
     queryset = Course.objects.all()
-    permission_classes = (IsAuthenticated, IsTeacherOrReadOnly,
-                          IsNotYourClassroom)
 
 
+@permission_classes([IsAuthenticated, IsTeacherOrReadOnly])
 class LectureListCreateView(generics.ListCreateAPIView):
     serializer_class = LectureDetailSerializer
-    permission_classes = (IsAuthenticated, IsTeacherOrReadOnly)
 
     def get_queryset(self):
         user = self.request.user
@@ -77,17 +79,15 @@ class LectureListCreateView(generics.ListCreateAPIView):
         return queryset
 
 
+@permission_classes([IsAuthenticated, IsTeacherOrReadOnly])
 class LectureDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = LectureDetailSerializer
-    permission_classes = (IsAuthenticated,
-                          IsTeacherOrReadOnly)
     queryset = Lecture.objects.all()
 
 
+@permission_classes([IsAuthenticated, IsTeacherOrReadOnly])
 class TaskListCreateView(generics.ListCreateAPIView):
     serializer_class = LectureDetailSerializer
-    permission_classes = (IsAuthenticated,
-                          IsTeacherOrReadOnly)
 
     def get_queryset(self):
         user = self.request.user
@@ -105,13 +105,13 @@ class TaskListCreateView(generics.ListCreateAPIView):
         return queryset
 
 
+@permission_classes([IsAuthenticated, IsTeacherOrReadOnly])
 class TaskDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = TaskDetailSerializer
     queryset = Task.objects.all()
-    permission_classes = (IsAuthenticated,
-                          IsTeacherOrReadOnly)
 
 
+@permission_classes([IsAuthenticated, IsStudentOrReadOnly])
 class CompletedtaskListCreateView(generics.ListCreateAPIView):
     serializer_class = CompletedTaskDetailSerializer
 
@@ -134,9 +134,9 @@ class CompletedtaskListCreateView(generics.ListCreateAPIView):
         serializer.save(student=self.request.user)
 
 
+@permission_classes([IsAuthenticated, ])
 class CompletedtaskDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = CompletedTaskDetailSerializer
-    permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
         user = self.request.user
@@ -147,9 +147,9 @@ class CompletedtaskDetailView(generics.RetrieveUpdateDestroyAPIView):
         return CompletedTask.objects.all
 
 
+@permission_classes([IsAuthenticated, ])
 class CommentListView(generics.ListCreateAPIView):
     serializer_class = CommentDetailSerializer
-    permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
         queryset = Comment.objects.filter(task=self.kwargs['pk'])
@@ -159,18 +159,18 @@ class CommentListView(generics.ListCreateAPIView):
         serializer.save(user=self.request.user)
 
 
+@permission_classes([IsAuthenticated, IsTeacherOrReadOnly])
 class CourseLecturesListView(generics.ListCreateAPIView):
     serializer_class = CourseDetailSerializer
-    permission_classes = (IsAuthenticated, IsTeacherOrReadOnly)
 
     def get_queryset(self):
         queryset = Lecture.objects.filter(course=self.kwargs['pk'])
         return queryset
 
 
+@permission_classes([IsAuthenticated, IsTeacherOrReadOnly])
 class LectureTasksListView(generics.ListCreateAPIView):
     serializer_class = TaskDetailSerializer
-    permission_classes = (IsAuthenticated, IsTeacherOrReadOnly)
 
     def get_queryset(self):
         queryset = Task.objects.filter(lectures=self.kwargs['pk'])

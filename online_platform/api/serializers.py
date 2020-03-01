@@ -24,11 +24,6 @@ class UserRegSerializer(serializers.ModelSerializer):
         fields = ('email', 'username', 'password', 'is_student', 'is_teacher')
 
     def save(self):
-        # user = BaseUser.objects.create_user(
-        # email=self.validated_data['email'],
-        # username=self.validated_data['username'],
-        # password=self.validated_data['password']
-        # )
         student = self.validated_data['is_student']
         teacher = self.validated_data['is_teacher']
         if student:

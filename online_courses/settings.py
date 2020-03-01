@@ -55,7 +55,6 @@ LOCAL_APPS = (
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
-#EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 SITE_ID = 1
 
@@ -68,9 +67,6 @@ ACCOUNT_UNIQUE_EMAIL = True
 # ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_USERNAME_REQUIRED = False
 
-REST_AUTH_REGISTER_SERIALIZER = {
-    'REGISTER_SERIALIZER': 'online_platform.api.serializers.UserRegSerializer',
-}
 
 
 MIDDLEWARE = [
@@ -165,9 +161,3 @@ AUTHENTICATION_BACKENDS = (
     'allauth.account.auth_backends.AuthenticationBackend',
 )
 
-'''
-SIMPLE_JWT = {
-    'AUTH_HEADER_TYPES': ('JWT',),
-}
-'''
-#REST_USE_JWT = True
