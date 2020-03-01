@@ -56,10 +56,14 @@ class Course(models.Model):
 
 
 class Lecture(models.Model):
+    topic = models.CharField(max_length=250, default='Cryptography')
     slug = models.SlugField(max_length=250)
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     content = models.FileField(upload_to=content_lectures)
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='courses')
+
+    def __str__(self):
+        return self.topic
 
 
 class Task(models.Model):
