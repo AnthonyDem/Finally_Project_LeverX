@@ -69,11 +69,11 @@ class LectureListCreateView(generics.ListCreateAPIView):
         user = self.request.user
         if user.is_student:
             queryset = Lecture.objects.filter(
-                course__students=user
+                courses__students=user
             )
         elif user.is_teacher:
             queryset = Lecture.objects.filter(
-                course__teachers=user
+                courses__teachers=user
             )
         elif self.request.user.is_superuser:
             queryset = Lecture.objects.all()
@@ -94,11 +94,11 @@ class TaskListCreateView(generics.ListCreateAPIView):
         user = self.request.user
         if user.is_student:
             queryset = Task.objects.filter(
-                lectures__course__students=user
+                lectures__courses__students=user
             )
         elif user.is_teacher:
             queryset = Task.objects.filter(
-                lectures__course__teachers=user  # lecture
+                lectures__courses__teachers=user  # lecture
             )
         elif user.is_superuser:
             queryset = Task.objects.all()
@@ -124,7 +124,7 @@ class CompletedtaskListCreateView(generics.ListCreateAPIView):
             )
         elif user.is_teacher:
             queryset = CompletedTask.objects.filter(
-                task__lectures__course_teachers=user  # lecture
+                task__lectures__courses__teachers=user  # lecture
             )
         elif user.is_superuser:
             queryset = CompletedTask.objects.all()
@@ -145,7 +145,7 @@ class CompletedtaskDetailView(generics.RetrieveUpdateDestroyAPIView):
             self.permission_classes = (IsStudentOrReadOnly,)
         elif user.is_teacher:
             self.permission_classes = (IsTeacherOrReadOnly,)
-        return CompletedTask.objects.all
+        return CompletedTask.objects.all()
 
 
 @permission_classes([IsAuthenticated, ])
@@ -153,7 +153,7 @@ class CommentListView(generics.ListCreateAPIView):
     serializer_class = CommentDetailSerializer
 
     def get_queryset(self):
-        queryset = Comment.objects.filter(task=self.kwargs['pk'])
+        queryset = Comment.objects.filter(comments=self.kwargs['pk'])
         return queryset
 
     def perform_create(self, serializer):
@@ -165,7 +165,7 @@ class CourseLecturesListView(generics.ListCreateAPIView):
     serializer_class = CourseDetailSerializer
 
     def get_queryset(self):
-        queryset = Lecture.objects.filter(course=self.kwargs['pk'])
+        queryset = Lecture.objects.filter(courses=self.kwargs['pk'])
         return queryset
 
 

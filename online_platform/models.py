@@ -84,8 +84,8 @@ class CompletedTask(models.Model):
     )
     content = models.FileField(upload_to=content_completed_tasks)
     student = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
-                                limit_choices_to={'is_student': True})
-    task = models.ForeignKey(Task, on_delete=models.CASCADE)
+                                limit_choices_to={'is_student': True}, related_name='student')
+    task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name='task')
     status = models.CharField(choices=STATUS_CHOICES, max_length=100, default='no_data')
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateField(auto_now=True)
