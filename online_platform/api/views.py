@@ -5,10 +5,11 @@ from online_platform.models import Lecture, Course, Task, CompletedTask, Comment
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.authtoken.models import Token
 from .permissions import (IsOwnerOrReadOnly, IsNotYourClassroom,
-                          IsStudentOrReadOnly, IsTeacherOrReadOnly)
+                          IsStudentOrReadOnly, IsTeacherOrReadOnly, IsStudent)
 from .serializers import (LectureDetailSerializer, TaskDetailSerializer,
                           CompletedTaskDetailSerializer, CommentDetailSerializer,
-                          BaseUserSerializer, CourseDetailSerializer, UserRegSerializer)
+                          BaseUserSerializer, CourseDetailSerializer, UserRegSerializer,
+                          MarkDetailSerializer)
 
 
 @api_view(['POST', ])
@@ -177,3 +178,11 @@ class LectureTasksListView(generics.ListCreateAPIView):
         queryset = Task.objects.filter(lectures=self.kwargs['pk'])
         return queryset
 
+
+@permission_classes([IsAuthenticated, IsStudent])
+class MarkListView(generics.ListAPIView):
+    serializer_class = MarkDetailSerializer
+
+    def get_queryset(self):
+        queryset = CompletedTask.objects.filter(student=self.request.user)
+        return queryset

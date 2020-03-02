@@ -9,17 +9,28 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
 
 
 class IsTeacherOrReadOnly(permissions.BasePermission):
-    def has_object_permission(self, request, view, obj):
+    def has_permission(self, request, view):
         if request.method in permissions.SAFE_METHODS:
             return True
         return request.user.is_teacher
 
 
 class IsStudentOrReadOnly(permissions.BasePermission):
-    def has_object_permission(self, request, view, obj):
+    def has_permission(self, request, view):
         if request.method in permissions.SAFE_METHODS:
             return True
         return request.user.is_student
+
+
+class IsStudent(permissions.BasePermission):
+    message = 'You are not a student'
+
+    def has_permission(self, request, view):
+        return request.user.is_student
+
+    def has_object_permission(self, request, view, obj):
+        if request.method in permissions.SAFE_METHODS:
+            return True
 
 
 class IsNotYourClassroom(permissions.BasePermission):
