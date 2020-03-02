@@ -49,7 +49,7 @@ class CourseDetailSerializer(serializers.ModelSerializer):
 class LectureDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Lecture
-        fields = ('author', 'content', 'course', 'created', 'updated')
+        fields = ('topic', 'author', 'content', 'course')
 
 
 class TaskDetailSerializer(serializers.ModelSerializer):

@@ -1,4 +1,7 @@
+from django.shortcuts import get_object_or_404
 from rest_framework import permissions
+
+from online_platform.models import CompletedTask
 
 
 class IsOwnerOrReadOnly(permissions.BasePermission):
@@ -41,3 +44,13 @@ class IsNotYourClassroom(permissions.BasePermission):
             return request.user in obj.teachers.all()
         elif request.user.is_student:
             return request.user in obj.students.all()
+
+
+class IsTeacherOrStudentWorker(permissions.BasePermission):
+    message = 'you haven\'t access'
+
+    def has_permission(self, request, view):
+        if request.user.is_teacher:
+            return request.user in CompletedTask.task.lectures.courses.teachers.all()
+        elif request.user.is_student:
+            return request.user == CompletedTask.student
