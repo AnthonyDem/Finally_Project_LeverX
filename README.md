@@ -1,6 +1,6 @@
-#Online Courses
+# Online Courses
 
-##Functionality 
+## Functionality 
 
 **All users can**
 
@@ -30,6 +30,6 @@
 
 Permissions are set for all actions so that users who do not have access to this course cannot see / do anything in it.
 
-#API documentation 
+# API documentation 
 
 **localhost:port/swagger/**
